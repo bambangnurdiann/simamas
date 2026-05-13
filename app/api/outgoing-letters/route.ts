@@ -24,3 +24,5 @@ export async function POST(req: Request) {
   });
   return ok(created, 201);
 }
+import { NextResponse } from "next/server";
+export async function GET(){ return NextResponse.json({message:"Endpoint surat keluar siap"}); }

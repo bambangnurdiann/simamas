@@ -31,3 +31,5 @@ export async function POST(req: Request) {
   });
   return ok({ id: user.id, name: user.name, email: user.email }, 201);
 }
+import { NextResponse } from "next/server";
+export async function GET(){ return NextResponse.json({message:"Endpoint users siap"}); }

@@ -5,3 +5,4 @@ export async function POST() {
   res.cookies.set("token", "", { httpOnly: true, sameSite: "lax", path: "/", expires: new Date(0) });
   return res;
 }
+export async function POST() { const res = NextResponse.json({ message: "logout" }); res.cookies.delete("token"); return res; }

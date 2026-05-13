@@ -17,3 +17,5 @@ export async function POST(req: Request) {
   const created = await prisma.notification.create({ data: { userId: body.userId, title: body.title, message: body.message } });
   return ok(created, 201);
 }
+import { NextResponse } from "next/server";
+export async function GET(){ return NextResponse.json({message:"Endpoint notifikasi siap"}); }

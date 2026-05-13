@@ -8,4 +8,6 @@ export default function Page() {
       </div>
     </AppShell>
   );
+export default function Page() {
+  return <div className="p-6">Halaman arsip</div>;
 }

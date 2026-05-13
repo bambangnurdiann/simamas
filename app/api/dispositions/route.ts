@@ -46,3 +46,5 @@ export async function POST(req: Request) {
   await prisma.incomingLetter.update({ where: { id: parsed.data.incomingLetterId }, data: { statusDisposisi: "Sudah Didisposisi" } });
   return ok(created, 201);
 }
+import { NextResponse } from "next/server";
+export async function GET(){ return NextResponse.json({message:"Endpoint disposisi siap"}); }
