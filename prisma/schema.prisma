@@ -1,0 +1,152 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RoleName {
+  ADMIN
+  PIMPINAN
+  SEKRETARIS
+  STAFF
+}
+
+enum DispositionStatus {
+  PENDING
+  DIPROSES
+  SELESAI
+}
+
+model Role {
+  id    String   @id @default(cuid())
+  name  RoleName @unique
+  users User[]
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String
+  email        String        @unique
+  passwordHash String
+  photoUrl     String?
+  isActive     Boolean       @default(true)
+  roleId       String
+  role         Role          @relation(fields: [roleId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  incomingCreated IncomingLetter[] @relation("IncomingCreatedBy")
+  outgoingCreated OutgoingLetter[] @relation("OutgoingCreatedBy")
+  dispositionsFrom Disposition[]   @relation("DispositionFrom")
+  dispositionRecipients DispositionRecipient[]
+  notifications Notification[]
+  activityLogs ActivityLog[]
+}
+
+model IncomingLetter {
+  id              String   @id @default(cuid())
+  agendaNumber    String   @unique
+  letterNumber    String
+  letterDate      DateTime
+  receivedDate    DateTime
+  sender          String
+  subject         String
+  classification  String
+  letterNature    String
+  attachmentCount Int      @default(0)
+  scanFilePath    String?
+  statusDisposisi String   @default("Belum Didisposisi")
+  createdById     String
+  createdBy       User     @relation("IncomingCreatedBy", fields: [createdById], references: [id])
+  dispositions    Disposition[]
+  attachments     Attachment[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model OutgoingLetter {
+  id             String   @id @default(cuid())
+  letterNumber   String   @unique
+  letterDate     DateTime
+  destination    String
+  subject        String
+  signer         String
+  attachmentInfo String?
+  filePath       String?
+  createdById    String
+  createdBy      User     @relation("OutgoingCreatedBy", fields: [createdById], references: [id])
+  attachments    Attachment[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Disposition {
+  id               String              @id @default(cuid())
+  incomingLetterId String
+  fromUserId       String
+  note             String?
+  instruction      String
+  deadline         DateTime?
+  status           DispositionStatus   @default(PENDING)
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  incomingLetter IncomingLetter @relation(fields: [incomingLetterId], references: [id])
+  fromUser       User           @relation("DispositionFrom", fields: [fromUserId], references: [id])
+  recipients     DispositionRecipient[]
+  attachments    Attachment[]
+}
+
+model DispositionRecipient {
+  id            String      @id @default(cuid())
+  dispositionId String
+  userId        String
+  followUpNote  String?
+  status        DispositionStatus @default(PENDING)
+  updatedAt     DateTime    @updatedAt
+
+  disposition Disposition @relation(fields: [dispositionId], references: [id])
+  user        User        @relation(fields: [userId], references: [id])
+
+  @@unique([dispositionId, userId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Attachment {
+  id               String   @id @default(cuid())
+  fileName         String
+  filePath         String
+  mimeType         String
+  fileSize         Int
+  incomingLetterId String?
+  outgoingLetterId String?
+  dispositionId    String?
+  createdAt        DateTime @default(now())
+
+  incomingLetter IncomingLetter? @relation(fields: [incomingLetterId], references: [id])
+  outgoingLetter OutgoingLetter? @relation(fields: [outgoingLetterId], references: [id])
+  disposition    Disposition?    @relation(fields: [dispositionId], references: [id])
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  entity    String
+  entityId  String
+  meta      Json?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
