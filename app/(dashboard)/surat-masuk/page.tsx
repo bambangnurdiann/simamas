@@ -19,3 +19,4 @@ export default function Page() {
     </AppShell>
   );
 }
+export default function Page() { return <div className=\"p-6\">Halaman surat-masuk</div>; }
