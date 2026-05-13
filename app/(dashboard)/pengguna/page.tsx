@@ -1,1 +1,3 @@
-export default function Page() { return <div className=\"p-6\">Halaman pengguna</div>; }
+export default function Page() {
+  return <div className="p-6">Halaman pengguna</div>;
+}
