@@ -17,4 +17,5 @@ export const outgoingLetterSchema = z.object({
   subject: z.string().min(1),
   signer: z.string().min(1),
   attachmentInfo: z.string().optional()
+  subject: z.string().min(1)
 });
